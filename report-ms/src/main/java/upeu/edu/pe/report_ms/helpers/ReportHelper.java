@@ -1,34 +1,28 @@
 package upeu.edu.pe.report_ms.helpers;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import upeu.edu.pe.report_ms.models.Company;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import upeu.edu.pe.report_ms.models.*;
 
 @Component
 public class ReportHelper {
-    @Value("${report.template}")
-    private String reportTemplate;
 
-    public String readTemplate(Company company) {
-        return this.reportTemplate
-                .replace("{company}", company.getName())
-                .replace("{foundation_date}", company.getFoundationDate().toString())
-                .replace("{founder}", company.getFounder())
-                .replace("{web_sites}", company.getWebSites().toString());
-    }
+    public String readTemplate(Appointment cita) {
+        Paciente paciente = cita.getPaciente();
+        Doctor doctor = cita.getDoctor();
+        Medicacion medicacion = cita.getMedicacion();
 
-    public List<String> getPlaceholdersFromTemplate(String template) {
-        var split = template.split("\\{");
-        return Arrays.stream(split)
-                .filter(line -> !line.isEmpty())
-                .map(line -> {
-                    var index = line.indexOf("}");
-                    return line.substring(0, index);
-                })
-                .collect(Collectors.toList());
+        return String.format(
+                """
+                """,
+                cita.getFechaHora(),
+                paciente.getNombres(), paciente.getApellidos(), paciente.getDni(), paciente.getCorreo(),
+                doctor.getNombres(), doctor.getApellidos(), doctor.getEspecialidad(), doctor.getHorarioDisponible(),
+                medicacion != null ? medicacion.getMedicamento() : "N/A",
+                medicacion != null ? medicacion.getDosis() : "N/A",
+                medicacion != null ? medicacion.getFrecuencia() : "N/A",
+                medicacion != null ? medicacion.getDuracion() : "N/A",
+                cita.getEstado(),
+                cita.getModalidad()
+        );
     }
 }

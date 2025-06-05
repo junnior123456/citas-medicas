@@ -1,7 +1,7 @@
 package upeu.edu.pe.report_ms.services;
 
+import java.util.List;
+
 public interface ReportService {
-    String makeReport(String name);
-    String saveReport(String report);
-    void deleteReport(String name);
+    List<String> generarReporte();
 }

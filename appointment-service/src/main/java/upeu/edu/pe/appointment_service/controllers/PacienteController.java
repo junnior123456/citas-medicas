@@ -7,6 +7,7 @@ import upeu.edu.pe.appointment_service.services.PacienteService;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/pacientes")
 public class PacienteController {

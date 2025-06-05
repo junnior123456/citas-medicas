@@ -1,51 +1,28 @@
 package upeu.edu.pe.report_ms.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import upeu.edu.pe.report_ms.helpers.ReportHelper;
-import upeu.edu.pe.report_ms.models.Company;
-import upeu.edu.pe.report_ms.models.WebSite;
-import upeu.edu.pe.report_ms.repositories.CompaniesRepository;
+import upeu.edu.pe.report_ms.models.Appointment;
+import upeu.edu.pe.report_ms.repositories.AppointmentRepository;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportServiceImpl implements ReportService {
 
-    private final CompaniesRepository companiesRepository;
-    private final ReportHelper reportHelper;
+    @Autowired
+    private AppointmentRepository repo;
 
-    public ReportServiceImpl(CompaniesRepository companiesRepository, ReportHelper reportHelper) {
-        this.companiesRepository = companiesRepository;
-        this.reportHelper = reportHelper;
-    }
+    @Autowired
+    private ReportHelper helper;
 
     @Override
-    public String makeReport(String name) {
-        return reportHelper.readTemplate(companiesRepository.getByName(name).orElseThrow());
-    }
-
-    @Override
-    public String saveReport(String report) {
-        var format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        var placeholders = reportHelper.getPlaceholdersFromTemplate(report);
-        var webSites = Stream.of(placeholders.get(3))
-                .map(site -> WebSite.builder().name(site).build()).toList();
-
-        var company = Company.builder()
-                .name(placeholders.get(0))
-                .foundationDate(LocalDate.parse(placeholders.get(1), format))
-                .founder(placeholders.get(2))
-                .webSites(webSites)
-                .build();
-
-        companiesRepository.postByName(company);
-        return "Saved";
-    }
-
-    @Override
-    public void deleteReport(String name) {
-        companiesRepository.deleteByName(name);
+    public List<String> generarReporte() {
+        List<Appointment> citas = repo.findAll();
+        return citas.stream()
+                .map(helper::readTemplate)
+                .collect(Collectors.toList());
     }
 }
