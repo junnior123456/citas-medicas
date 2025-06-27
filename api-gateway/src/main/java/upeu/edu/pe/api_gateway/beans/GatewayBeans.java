@@ -5,9 +5,16 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import upeu.edu.pe.api_gateway.filters.AuthFilter;
 
 @Configuration
 public class GatewayBeans {
+
+    private final AuthFilter authFilter;
+
+    public GatewayBeans(AuthFilter authFilter) {
+        this.authFilter = authFilter;
+    }
 
     @Bean
     @Profile("eureka-off")
@@ -44,6 +51,27 @@ public class GatewayBeans {
                         .path("/api/companies/**")
                         .filters(f -> f.stripPrefix(2))
                         .uri("lb://companies-crud"))
+                .build();
+    }
+    @Bean
+    @Profile(value = "oauth2")
+    public RouteLocator routeLocatorOauth2(RouteLocatorBuilder builder) {
+        return builder
+                .routes()
+                .route(route -> route
+                        .path("/companies-crud/company/**")
+                        .filters(filter -> filter.filter(this.authFilter))
+                        .uri("lb://companies-crud")  //load balance = lb = balanceo de carga
+                )
+                .route(route -> route
+                        .path("/report-ms/report/**")
+                        .filters(filter -> filter.filter(this.authFilter))
+                        .uri("lb://report-ms")
+                )
+                .route(route -> route
+                        .path("/auth-server/auth/**")
+                        .uri("lb://auth-server")
+                )
                 .build();
     }
 }

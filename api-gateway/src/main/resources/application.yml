@@ -5,7 +5,7 @@ spring:
   application:
     name: api-gateway
   profiles:
-    default: eureka-on
+    default: oauth2 #eureka-off, eureka-on, oauth2
   config:
     import: "optional:configserver:http://localhost:8888"
 
