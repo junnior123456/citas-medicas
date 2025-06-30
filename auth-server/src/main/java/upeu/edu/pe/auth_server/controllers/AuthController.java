@@ -15,24 +15,25 @@ public class AuthController {
     private final AuthService authService;
     private final Logger log = LoggerFactory.getLogger(AuthController.class);
 
-
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
-    @PostMapping(path = "login") //password = secret2025
+    @PostMapping(path = "login") // password = secret2025
     public ResponseEntity<TokenDto> jwtCreate(@RequestBody UserDto user) {
         return ResponseEntity.ok(this.authService.login(user));
     }
 
+
     @PostMapping(path = "jwt")
     public ResponseEntity<TokenDto> jwtValidate(@RequestHeader String accessToken) {
-        log.info("Auth_controller:"+accessToken);
-
-        return
-                ResponseEntity.ok(
-                        this.authService.validateToken(TokenDto.builder().accessToken(accessToken).build()));
+        log.info("Auth_controller:" + accessToken);
+        return ResponseEntity.ok(
+                this.authService.validateToken(TokenDto.builder().accessToken(accessToken).build()));
     }
 
-
+    @PostMapping(path = "register") // ✅ nuevo endpoint
+    public ResponseEntity<TokenDto> register(@RequestBody UserDto dto) {
+        return ResponseEntity.ok(authService.register(dto));
+    }
 }

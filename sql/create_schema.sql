@@ -16,6 +16,17 @@ CREATE TABLE IF NOT EXISTS doctor (
     horario_disponible TEXT
 );
 
+-- Tabla de usuarios (para login y roles)
+CREATE TABLE IF NOT EXISTS usuario (
+    id SERIAL PRIMARY KEY,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    rol VARCHAR(50) NOT NULL, -- 'PACIENTE' o 'DOCTOR'
+    referencia_id INTEGER NOT NULL,
+    CONSTRAINT chk_rol CHECK (rol IN ('PACIENTE', 'DOCTOR'))
+    -- NOTA: La referencia se validará en la lógica de aplicación (Java), no a nivel SQL
+);
+
 -- Tabla de citas médicas
 CREATE TABLE IF NOT EXISTS cita (
     id SERIAL PRIMARY KEY,
